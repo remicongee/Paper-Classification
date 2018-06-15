@@ -14,6 +14,16 @@ def readGraph(path):
     return df
 
 
+def readInfo(path):
+    '''
+    read node information from .csv file
+    :param path: path of .csv file
+    :return: information dataframe
+    '''
+    df = pd.read_csv(path)
+    return df
+
+
 def readIdLabel(path):
     """
     read id and label from .csv file
