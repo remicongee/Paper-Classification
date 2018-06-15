@@ -89,13 +89,14 @@ def extractFeature(text_list):
     return feature_list
    
 
-def graphWeighted(graph, feature_list):
+def graphWeighted(graph, feature_list, id_list):
     """
     reform graph with weights between each pair of nodes
 
     Args:
         graph: networkx type graph
         feature_list: feature list
+        id_list: id list
 
     Returns: 
         graph reformed, each row contains edge weights according to similarity
