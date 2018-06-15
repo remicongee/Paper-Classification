@@ -2,15 +2,15 @@ from sklearn.base import BaseEstimator
 
 
 class Classifier(BaseEstimator):
-    def __init__(self, ):
-        pass    
+    def __init__(self, graph, ):
+        self.Graph = graph    
     
-    def combineFeature(self, graph, x, x_id):
+
+    def combineFeature(self, x, x_id):
         """
         combine features from cite/cited articles
 
         Args:
-            graph: networkx type graph
             x: sample feature
             x_id: sample ID
         
@@ -18,6 +18,7 @@ class Classifier(BaseEstimator):
             feature combined from cite/cited articles
         """
         pass
+
 
     def fit(self, x, y):
         """
@@ -32,6 +33,7 @@ class Classifier(BaseEstimator):
             None
         """
         pass
+        
 
     def predict(self, x):
         """
