@@ -32,13 +32,14 @@ class Classifier(nn.Module):
         ouput prediction probability from feature x
 
         Args:
-            x: feature
+            x: if not 'total' mode: feature; 
+               else: x[0] self feature, x[1] citing feature, x[2] cited feature
         
         Returns:
             probability of x belonging to different classes
         """
         if self.Mode == 'total':
-            output = self.ClfFeat(x) * self.ClfCiting(x) * self.ClfCited(x)
+            output = self.ClfFeat(x[0]) * self.ClfCiting(x[1]) * self.ClfCited(x[2])
         elif self.Mode == 'feature' or self.Mode == 'citing' or self.Mode == 'cited':
             output = nn.ReLU(self.Linear(x))
             output = nn.Softmax(output)
