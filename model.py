@@ -1,64 +1,45 @@
-from sklearn.base import BaseEstimator
+import torch.nn as nn
 
 
-class Classifier(BaseEstimator):
-    def __init__(self, graph, graph_train, mode='train'):
-        self.Graph = graph
-        self.GraphTrain = graph_train
+class Classifier(nn.Module):
+    def __init__(self, input_size=10, class_num = 28, mode='total', 
+                 clf_feat=None, clf_citing=None, clf_cited=None):
+        super(Classifier, self).__init__()
         self.Mode = mode
+        self.ClfFeat = clf_feat
+        self.ClfCite = clf_citing
+        self.ClfCited = clf_cited
+        self.Linear = None
+        if self.Mode != 'total':
+            self.Linear = nn.Linear(input_size, class_num)
     
 
-    def setMode(self, mode='train'):
+    def setMode(self, mode='feature'):
         """
         set mode of classifier
 
         Args:
-            mode: string type, 'train'/'test'
+            mode: string type, 'feature', 'citing', 'cited' and 'total'
         
         Returns:
             none
         """
         self.Mode = mode
-    
 
-    def combineFeature(self, x, x_id):
+
+    def forward(self, x):
         """
-        combine features from cite/cited articles
+        ouput prediction probability from feature x
 
         Args:
-            x: sample feature
-            x_id: sample ID
-        
-        Returns:
-            feature combined from cite/cited articles
-        """
-        pass
-
-
-    def fit(self, x, y):
-        """
-        fit classifier so that f(x) = y
-
-        Args:
-            x: combined list,
-               x[0] features; x[1] IDs
-            y: one-hot label
-        
-        Returns:
-            None
-        """
-        pass
-
-
-    def predict(self, x):
-        """
-        predict class from x
-
-        Args:
-            x: combined list,
-               x[0] features; x[1] IDs
+            x: feature
         
         Returns:
             probability of x belonging to different classes
         """
-        pass
+        if self.Mode == 'total':
+            output = self.ClfFeat(x) * self.ClfCite(x) * self.ClfCited(x)
+        elif self.Mode == 'feature' or self.Mode == 'citing' or self.Mode == 'cited':
+            output = nn.ReLU(self.Linear(x))
+            output = nn.Softmax(output)
+        return output
