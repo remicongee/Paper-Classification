@@ -10,7 +10,8 @@ def readGraph(path):
     :param path: path of .txt file
     :return: a networks type graph
     """
-    pass
+    df = nx.read_edgelist(path, delimiter='\t', create_using=nx.DiGraph())
+    return df
 
 
 def readIdLabel(path):
@@ -19,7 +20,9 @@ def readIdLabel(path):
     :param path: path of .csv file
     :return: id list, label list
     """
-    pass
+    id_list = list()
+    label_list = list()
+    return id_list, label_list
 
 
 def label2onehot(label_list):
@@ -28,7 +31,7 @@ def label2onehot(label_list):
     :param label_list: label list
     :return: matrix type, each row contains a one-hot vector
     """
-    pass
+    return label_list
 
 
 def readText(dataframe):
@@ -37,7 +40,8 @@ def readText(dataframe):
     :param dataframe: dataframe type, contains node information
     :return: text list
     """
-    pass
+    text_list = list()
+    return text_list
 
 
 def extractFeature(text_list):
@@ -46,7 +50,8 @@ def extractFeature(text_list):
     :param text_list: text list
     :return: matrix type, each row contains a feature vector
     """
-    pass
+    feature_list = list()
+    return feature_list
 
 def graphWeighted(graph, feature_list):
     """
@@ -55,7 +60,7 @@ def graphWeighted(graph, feature_list):
     :param feature_list: feature list
     :return: graph reformed, each row contains edge weights according to similarity
     """
-    pass
+    return graph
 
 def evaluate(pred_proba, onehot):
     """
@@ -64,4 +69,5 @@ def evaluate(pred_proba, onehot):
     :param onehot: ground truth
     :return: 1/N \sum{y_{ij} \log{p_{ij}}}
     """
-    pass
+    perform = 0
+    return perform
