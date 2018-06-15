@@ -2,8 +2,23 @@ from sklearn.base import BaseEstimator
 
 
 class Classifier(BaseEstimator):
-    def __init__(self, graph, ):
-        self.Graph = graph    
+    def __init__(self, graph, graph_train, mode='train'):
+        self.Graph = graph
+        self.GraphTrain = graph_train
+        self.Mode = mode
+    
+
+    def setMode(self, mode='train'):
+        """
+        set mode of classifier
+
+        Args:
+            mode: string type, 'train'/'test'
+        
+        Returns:
+            none
+        """
+        self.Mode = mode
     
 
     def combineFeature(self, x, x_id):
@@ -33,7 +48,7 @@ class Classifier(BaseEstimator):
             None
         """
         pass
-        
+
 
     def predict(self, x):
         """
