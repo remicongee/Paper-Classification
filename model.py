@@ -7,7 +7,7 @@ class Classifier(nn.Module):
         super(Classifier, self).__init__()
         self.Mode = mode
         self.ClfFeat = clf_feat
-        self.ClfCite = clf_citing
+        self.ClfCiting = clf_citing
         self.ClfCited = clf_cited
         self.Linear = None
         if self.Mode != 'total':
@@ -38,7 +38,7 @@ class Classifier(nn.Module):
             probability of x belonging to different classes
         """
         if self.Mode == 'total':
-            output = self.ClfFeat(x) * self.ClfCite(x) * self.ClfCited(x)
+            output = self.ClfFeat(x) * self.ClfCiting(x) * self.ClfCited(x)
         elif self.Mode == 'feature' or self.Mode == 'citing' or self.Mode == 'cited':
             output = nn.ReLU(self.Linear(x))
             output = nn.Softmax(output)
