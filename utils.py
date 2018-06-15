@@ -7,19 +7,27 @@ import pandas as pd
 def readGraph(path):
     """
     read graph from .txt file
-    :param path: path of .txt file
-    :return: a networks type graph
+
+    Args:
+        path: path of .txt file
+        
+    Returns: 
+        a networks type graph
     """
     df = nx.read_edgelist(path, delimiter='\t', create_using=nx.DiGraph())
     return df
 
 
 def readInfo(path):
-    '''
+    """
     read node information from .csv file
-    :param path: path of .csv file
-    :return: information dataframe
-    '''
+
+    Args:
+        path: path of .csv file
+    
+    Returns:
+        information dataframe
+    """
     df = pd.read_csv(path)
     return df
 
@@ -27,8 +35,12 @@ def readInfo(path):
 def readIdLabel(path):
     """
     read id and label from .csv file
-    :param path: path of .csv file
-    :return: id list, label list
+
+    Args:
+        path: path of .csv file
+
+    Returns: 
+        id list, label list
     """
     id_list = list()
     label_list = list()
@@ -38,17 +50,26 @@ def readIdLabel(path):
 def label2onehot(label_list):
     """
     transform class label list to one-hot vector list
-    :param label_list: label list
-    :return: matrix type, each row contains a one-hot vector
+
+    Args:
+        label_list: label list
+
+    Returns: 
+        matrix type, each row contains a one-hot vector
     """
     return label_list
 
 
-def readText(dataframe):
+def readText(dataframe, id_list):
     """
     read text (abstract) from dataframe
-    :param dataframe: dataframe type, contains node information
-    :return: text list
+
+    Args:
+        dataframe: dataframe type, contains node information
+        id_list: sample list containing IDs
+
+    Returns: 
+        text list
     """
     text_list = list()
     return text_list
@@ -57,27 +78,41 @@ def readText(dataframe):
 def extractFeature(text_list):
     """
     extract feature list from text list
-    :param text_list: text list
-    :return: matrix type, each row contains a feature vector
+
+    Args:
+        text_list: text list
+
+    Returns: 
+        matrix type, each row contains a feature vector
     """
     feature_list = list()
     return feature_list
+   
 
 def graphWeighted(graph, feature_list):
     """
     reform graph with weights between each pair of nodes
-    :param graph: networkx type graph
-    :param feature_list: feature list
-    :return: graph reformed, each row contains edge weights according to similarity
+
+    Args:
+        graph: networkx type graph
+        feature_list: feature list
+
+    Returns: 
+        graph reformed, each row contains edge weights according to similarity
     """
     return graph
+
 
 def evaluate(pred_proba, onehot):
     """
     evaluate prediction performance by cross-entropy
-    :param pred_proba: probability predicted for each sample belonging to different classes
-    :param onehot: ground truth
-    :return: 1/N \sum{y_{ij} \log{p_{ij}}}
+
+    Args:
+        pred_proba: probability predicted for each sample belonging to different classes
+        onehot: ground truth
+
+    Returns: 
+        1/N \sum{y_{ij} \log{p_{ij}}}
     """
     perform = 0
     return perform
