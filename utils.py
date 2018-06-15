@@ -47,6 +47,21 @@ def readIdLabel(path):
     return id_list, label_list
 
 
+def graphTrain(graph, id_list):
+    """
+    construct graph from training set
+
+    Args:
+        graph: networkx type graph
+        id_list: IDs of training set
+    
+    Returns:
+        graph constucted from training set
+    """
+    graph_train = graph
+    return graph_train
+
+
 def label2onehot(label_list):
     """
     transform class label list to one-hot vector list
