@@ -2,6 +2,7 @@ import networkx as nx
 import nltk
 import csv
 import pandas as pd
+import torch.nn as nn
 
 
 def readGraph(path):
@@ -98,25 +99,73 @@ def extractFeature(text_list):
         text_list: text list
 
     Returns: 
-        matrix type, each row contains a feature vector
+        feature_list: matrix type, each row contains a feature vector
+        extractor: extractor trained by training set
     """
+    extractor = None
     feature_list = list()
-    return feature_list
+    return feature_list, extractor
+    
+
+def similarity(self, x, y):
+    """
+    calculate similarity between x and y
+
+    Args:
+        x: feature vector
+        y: feature vector
+        
+    Returns:
+        reel number indicating similarity
+    """
+    cos = nn.CosineSimilarity()
+    return cos(x, y)
    
 
-def graphWeighted(graph, feature_list, id_list):
+def graphWeighted(graph, feature_list):
     """
     reform graph with weights between each pair of nodes
 
     Args:
         graph: networkx type graph
         feature_list: feature list
-        id_list: id list
 
     Returns: 
         graph reformed, each row contains edge weights according to similarity
     """
-    return graph
+    graph_weighted = None
+    return graph_weighted
+
+
+def graphFeatured(graph_weighted, feature_list):
+    """
+    reform graph weighted so as to contain features
+
+    Args:
+        graph_weighted: graph weighted
+        feature_list: feature list
+    
+    Returns:
+        graph featured
+    """
+    graph_featured = None
+    return graph_featured
+
+
+def combineFeature(graph_featured, citation):
+    """
+    combine feature of citing or cited articles
+
+    Args:
+        graph_featured: graph featured
+        citation: a matrix composed by 0 and 1, indicating citing or cited condition
+    
+    Returns:
+        feature combined, type list
+    """
+    feature_citation = graph_featured * citation
+    feature_list = feature_citation.sum(axis=1)
+    return feature_list
 
 
 def evaluate(pred_proba, onehot):
