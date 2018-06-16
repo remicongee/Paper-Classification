@@ -1,5 +1,6 @@
+import torch
 import torch.nn as nn
-
+import torch.nn.functional as F
 
 class Classifier(nn.Module):
     def __init__(self, input_size=10, class_num = 28, mode='total', 
@@ -39,8 +40,8 @@ class Classifier(nn.Module):
             probability of x belonging to different classes
         """
         if self.Mode == 'total':
-            output = self.ClfFeat(x[0]) * self.ClfCiting(x[1]) * self.ClfCited(x[2])
+            output = torch.mul(torch.mul(self.ClfFeat(x[0]), self.ClfCiting(x[1])), self.ClfCited(x[2]))
         elif self.Mode == 'feature' or self.Mode == 'citing' or self.Mode == 'cited':
-            output = nn.ReLU(self.Linear(x))
-            output = nn.Softmax(output)
+            output = F.relu(self.Linear(x))
+            output = F.softmax(output)
         return output
