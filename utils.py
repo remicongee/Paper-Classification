@@ -2,7 +2,7 @@ import networkx as nx
 import nltk
 import csv
 import pandas as pd
-import torch.nn as nn
+import numpy as np
 
 
 def readGraph(path):
@@ -15,8 +15,8 @@ def readGraph(path):
     Returns: 
         a networks type graph
     """
-    df = nx.read_edgelist(path, delimiter='\t', create_using=nx.DiGraph())
-    return df
+    graph = nx.read_edgelist(path, delimiter='\t', create_using=nx.DiGraph())
+    return graph
 
 
 def readInfo(path):
@@ -45,6 +45,13 @@ def readIdLabel(path):
     """
     id_list = list()
     label_list = list()
+    with open(path, 'r') as f:
+        next(f)
+        for line in f:
+            t = line.split(',')
+            id_list.append(t[0])
+            if t[1][:-1] != '':
+                label_list.append(t[1][:-1])
     return id_list, label_list
 
 
@@ -59,7 +66,7 @@ def graphTrain(graph, id_list):
     Returns:
         graph constucted from training set
     """
-    graph_train = graph
+    graph_train = graph.subgraph(id_list)
     return graph_train
 
 
@@ -71,9 +78,14 @@ def label2onehot(label_list):
         label_list: label list
 
     Returns: 
-        matrix type, each row contains a one-hot vector
+        matrix type, each row contains a one-hot vector, shape MxC
     """
-    return label_list
+    unique = np.unique(label_list)
+    label_matrix = np.zeros((len(label_list),unique.size))
+
+    for idx, label in enumerate(label_list):
+        label_matrix[idx][np.argwhere(unique == label)[0][0]] = 1
+    return label_matrix
 
 
 def readText(dataframe, id_list):
@@ -88,6 +100,8 @@ def readText(dataframe, id_list):
         text list
     """
     text_list = list()
+    for id in id_list:
+        text_list.append(dataframe.loc[dataframe['id'] == int(id)]['abstract'].iloc[0])
     return text_list
 
 
@@ -99,29 +113,34 @@ def extractFeature(text_list):
         text_list: text list
 
     Returns: 
-        feature_list: matrix type, each row contains a feature vector
+        feature_list: matrix type, each row contains a feature vector, shape MxW
         extractor: extractor trained by training set
     """
-    extractor = None
-    feature_list = list()
+    #feature extraction based on word frequency
+    from sklearn.feature_extraction.text import TfidfVectorizer
+    extractor = TfidfVectorizer(decode_error='ignore', stop_words='english')
+    feature_list = extractor.fit_transform(text_list).toarray()
     return feature_list, extractor
-    
 
-def similarity(self, x, y):
+
+def similarity(x, y):
     """
     calculate similarity between x and y
 
     Args:
-        x: feature vector
-        y: feature vector
+        x: feature vector, shape 1xF
+        y: feature vector, shape 1xF
         
     Returns:
         reel number indicating similarity
     """
-    cos = nn.CosineSimilarity()
-    return cos(x, y)
+    import torch.nn.functional as F
+    import torch
+    return F.cosine_similarity(torch.Tensor(x.reshape(1, -1)), 
+                               torch.Tensor(y.reshape(1, -1)))
    
 
+# to be discrepted
 def graphWeighted(graph, feature_list):
     """
     reform graph with weights between each pair of nodes
@@ -137,6 +156,7 @@ def graphWeighted(graph, feature_list):
     return graph_weighted
 
 
+# to be discrepted
 def graphFeatured(graph_weighted, feature_list):
     """
     reform graph weighted so as to contain features
@@ -152,20 +172,27 @@ def graphFeatured(graph_weighted, feature_list):
     return graph_featured
 
 
-def combineFeature(graph_featured, citation):
+def combineFeature(graph, id_list, feature_list):
     """
     combine feature of citing or cited articles
 
     Args:
-        graph_featured: graph featured
-        citation: a matrix composed by 0 and 1, indicating citing or cited condition
+        graph: original directed graph
+        id_list: ID list
+        feature_list: feature list
     
     Returns:
         feature combined, type list
     """
-    feature_citation = graph_featured * citation
-    feature_list = feature_citation.sum(axis=1)
-    return feature_list
+    feature_combined_list = list()
+    for _, node in enumerate(graph.nodes()):
+        feature = feature_list[id_list.index(node)]
+        feature_combined = np.zeros(len(feature))
+        for _, successor in enumerate(graph.successors(node)):
+            feature_successor = feature_list[id_list.index(successor)]
+            feature_combined += similarity(feature, feature_successor) * feature_successor
+        feature_combined_list.append(feature_combined)
+    return feature_combined_list
 
 
 def evaluate(pred_proba, onehot):
@@ -173,11 +200,10 @@ def evaluate(pred_proba, onehot):
     evaluate prediction performance by cross-entropy
 
     Args:
-        pred_proba: probability predicted for each sample belonging to different classes
-        onehot: ground truth
+        pred_proba: probability predicted for each sample belonging to different classes, shape NxC
+        onehot: ground truth, shape NxC
 
     Returns: 
         1/N \sum{y_{ij} \log{p_{ij}}}
     """
-    perform = 0
-    return perform
+    return np.mean(np.sum(np.log(pred_proba) * onehot, axis=1))
